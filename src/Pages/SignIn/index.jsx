@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import Layout from "../../Components/Layout";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ShoppingCartContext } from "../../Context";
 
 function SignIn() {
   const context = useContext(ShoppingCartContext);
+  const [view, setView] = useState("user-info");
 
   //Account
   const account = localStorage.getItem("account");
   const parsedAccount = JSON.parse(account);
-
   //Has an account
   const noAccountInLocalStorage = parsedAccount
     ? Object.keys(parsedAccount).length === 0
@@ -17,11 +17,10 @@ function SignIn() {
   const noAccountInLocalState = parsedAccount
     ? Object.keys(context.account).length === 0
     : true;
-  const hasUserAnAccount = !noAccountInLocalState || !noAccountInLocalStorage;
+  const hasUserAnAccount = !noAccountInLocalStorage || !noAccountInLocalState  ;
 
-  return (
-    <Layout>
-      <h1 className="font-medium text-xl text-center mb-6 w-80">Welcome</h1>
+  function renderLogIn() {
+    return (
       <div className="flex flex-col w-80 font-medium">
         <p>
           <span className="font-light text-sm">Email: </span>
@@ -46,11 +45,28 @@ function SignIn() {
         </div>
         <button
           className="bg-white text-black rounded-lg border-black disabled:bg-black/40 border w-full py-3 mt-6"
-          disabled={!hasUserAnAccount}
+          onClick={() => setView("create-user-info")}
+          disabled={hasUserAnAccount}
         >
           Sign up
         </button>
       </div>
+    );
+  }
+
+  function renderCreateUserInfo() {
+    // TODO: Create render view
+    return <div>TODO: Create render view</div>;
+  }
+
+  function renderView() {
+    return view === 'create-user-info' ? renderCreateUserInfo() : renderLogIn();
+  }
+
+  return (
+    <Layout>
+      <h1 className="font-medium text-xl text-center mb-6 w-80">Welcome</h1>
+      {renderView()}
     </Layout>
   );
 }
