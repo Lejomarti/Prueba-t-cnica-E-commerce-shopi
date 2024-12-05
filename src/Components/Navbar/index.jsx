@@ -28,7 +28,7 @@ const Navbar = () => {
             isActive ? activeStyle : undefined
           }
           onClick={()=> handleSignOut()}>
-          Sign In
+          Sign in
         </NavLink>
       </li>
       )
