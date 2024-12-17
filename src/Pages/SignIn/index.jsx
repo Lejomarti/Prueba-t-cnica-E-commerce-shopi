@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link , Navigate } from "react-router-dom";
 import Layout from "../../Components/Layout";
 import { useContext, useState, useRef } from "react";
 import { ShoppingCartContext } from "../../Context";
+import { parse } from "postcss";
 
 function SignIn() {
   const context = useContext(ShoppingCartContext);
@@ -20,6 +21,14 @@ function SignIn() {
     : true;
   const hasUserAnAccount = !noAccountInLocalStorage || !noAccountInLocalState;
 
+  function handleSignIn(){
+    const stringifiedSignOut = JSON.stringify (false)
+    localStorage.setItem("sign-out",stringifiedSignOut)
+    context.setSignOut(false)
+
+    return <Navigate replace to = '/'/>
+  }
+
   function createAnAccount(){
     const formData = new FormData(form.current)
     const data = {
@@ -27,8 +36,11 @@ function SignIn() {
       email: formData.get('email'),
       password: formData.get('password'),
     }
-    //provisional console.log
-    console.log(data)
+
+    //data -> save it in the localStorage
+    const stringifiedData = JSON.stringify(data)
+    localStorage.setItem("account", stringifiedData);
+    context.setAccount(data)
   }
 
   function renderLogIn() {
@@ -45,6 +57,7 @@ function SignIn() {
         <Link to="/">
           <button
             className="bg-black text-white rounded-lg disabled:bg-black/40 w-full py-3 mt-4 mb-4"
+            onClick={()=> handleSignIn()}
             disabled={!hasUserAnAccount}
           >
             Log in
@@ -57,7 +70,7 @@ function SignIn() {
         </div>
         <button
           className="bg-white text-black rounded-lg border-black disabled:bg-black/40 border w-full py-3 mt-6"
-          onClick={() => setView("create-user-info")}
+          onClick={() => setView('create-user-info')}
           disabled={hasUserAnAccount}
         >
           Sign up
@@ -123,13 +136,11 @@ function SignIn() {
   function renderView() {
     return view === "create-user-info" ? renderCreateUserInfo() : renderLogIn();
   }
-
   return (
     <Layout>
       <h1 className="font-medium text-xl text-center mb-6 w-80">Welcome</h1>
-
-      {renderCreateUserInfo()}
-      {/* {renderView()} */}
+      {renderView()}
+      
     </Layout>
   );
 }
